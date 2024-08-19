@@ -1,0 +1,16 @@
+{
+    "configurations": [
+        {
+            "name": "ARM",
+            "compileCommands": "${workspaceRoot}/build/compile_commands.json",
+            "intelliSenseMode": "gcc-arm",
+            "browse": {
+                "path": [
+                    "${workspaceFolder}"
+                ]
+            },
+            "cStandard": "c23"
+        }
+    ],
+    "version": 4
+}
