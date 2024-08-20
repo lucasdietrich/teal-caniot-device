@@ -3,3 +3,7 @@
 #
 # SPDX-License-Identifier: Apache-4.0
 #
+
+config BOARD_TEAL_CANIOT
+	bool "Teal Caniot"
+	depends on SOC_STM32F072XB
