@@ -5,9 +5,9 @@
  */
  
  /dts-v1/;
-#include <st/f0/stm32f072Xb.dtsi>
-#include <st/f0/stm32f072r(8-b)tx-pinctrl.dtsi>
-#include <zephyr/dt-bindings/input/input-event-codes.h>
+ #include <st/l4/stm32l462Xe.dtsi>
+ #include <st/l4/stm32l462retx-pinctrl.dtsi>
+ #include <zephyr/dt-bindings/input/input-event-codes.h>
 
 
 / {
@@ -18,99 +18,121 @@
 		zephyr,sram = &sram0;
 		zephyr,canbus = &can1;
 		zephyr,flash = &flash0;
-		zephyr,console = &usart1;
+		zephyr,console = &lpuart1;
+		zephyr,shell-uart = &lpuart1;
 	};
 };
 
-/* Clocks */
-&clk_hse {
+/* clocks */
+&clk_lsi {
 	status = "okay";
-	clock-frequency = < DT_FREQ_M(8) >; // 8 MHz crystal
 };
 
 &clk_hsi {
 	status = "okay";
 };
 
-&clk_lsi {
-	status = "okay";
-};
-
 &pll {
+	div-m = <1>;
+	mul-n = <20>;
+	div-r = <2>;
+	div-q = <2>;
+	div-p = <7>;
+	clocks = <&clk_hse>;
 	status = "okay";
-	clocks = < &clk_hse >;
-	prediv = < 1 >;
-	mul = < 6 >;
 };
 
-&clk_hsi48 {
+&clk_hse {
 	status = "okay";
+	clock-frequency = < DT_FREQ_M(8) >;
 };
 
 
 &rcc {
-	clocks = < &pll >;
-	clock-frequency = < DT_FREQ_M(48) >;
-	ahb-prescaler = < 1 >;
-	apb1-prescaler = < 1 >;
+	clocks = <&pll>;
+	clock-frequency = <DT_FREQ_M(80)>;
+	ahb-prescaler = <1>;
+	apb1-prescaler = <1>;
+	apb2-prescaler = <1>;
 };
 
+/* Uarts */
 
-/* Communication */
+&can1 {
+	status = "okay";
+	pinctrl-0 = <&can1_rx_pb8 &can1_tx_pb9>;
+	pinctrl-names = "default";
+	bitrate = < 500000 >;
+};
 
+&lpuart1 {
+	status = "okay";
+	pinctrl-0 = <&lpuart1_tx_pb11 &lpuart1_rx_pb10>;
+	pinctrl-names = "default";
+	current-speed = < 115200 >;
+};
+
+&usart3 {
+	status = "okay";
+	pinctrl-0 = <&usart3_tx_pc4 &usart3_rx_pc5>;
+	pinctrl-names = "default";
+	current-speed = < 115200 >;
+};
+
+&uart4 {
+	status = "okay";
+	pinctrl-0 = <&uart4_tx_pc10 &uart4_rx_pc11>;
+	pinctrl-names = "default";
+	current-speed = < 115200 >;
+};
+
+/* I2C */
+&i2c1 {
+	status = "okay";
+	pinctrl-0 = <&i2c1_scl_pb6 &i2c1_sda_pb7>;
+	pinctrl-names = "default";
+	clock-frequency = <I2C_BITRATE_FAST>;
+};
+
+/* SPIs */
 &spi1 {
 	status = "okay";
 	pinctrl-names = "default";
-	pinctrl-0 = <&spi1_miso_pb4 &spi1_mosi_pb5 &spi1_sck_pb3>;
+	pinctrl-0 = <&spi1_sck_pb3 &spi1_mosi_pb5 &spi1_miso_pb4>;
+	cs-gpios = < &gpiob 2 (GPIO_ACTIVE_LOW | GPIO_PULL_UP) >;
 };
 
-&timers2 {
+&spi2 {
 	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&spi2_sck_pb13 &spi2_mosi_pb15 &spi2_miso_pb14>;
+	cs-gpios = < &gpiob 12 (GPIO_ACTIVE_LOW | GPIO_PULL_UP) >;
 };
 
+/* ADC */
 &adc1 {
 	status = "okay";
 	pinctrl-0 = <
-		&adc_in4_pa4 &adc_in5_pa5 &adc_in6_pa6 &adc_in7_pa7 
-		&adc_in8_pb0 &adc_in9_pb1 &adc_in10_pc0 &adc_in11_pc1 
-		&adc_in12_pc2 &adc_in13_pc3
+		&adc1_in1_pc0 &adc1_in2_pc1 &adc1_in3_pc2 &adc1_in4_pc3
+		&adc1_in9_pa4 &adc1_in10_pa5 &adc1_in11_pa6 &adc1_in12_pa7
+		&adc1_in15_pb0 &adc1_in16_pb1
 	>;
 	pinctrl-names = "default";
 	st,adc-clock-source = < ASYNC >;
 	st,adc-prescaler = < 1 >; // TODO good value?
 };
 
+/* timers */
+&timers1 {
+	status = "okay";
+};
+
+&timers2 {
+	status = "okay";
+};
+
 &timers3 {
 	status = "okay";
-};
-
-&i2c2 {
-	status = "okay";
-	pinctrl-0 = <&i2c2_scl_pb10 &i2c2_sda_pb11>;
-	pinctrl-names = "default";
-	clock-frequency = <I2C_BITRATE_FAST>;
-};
-
-&can1
-{
-	status = "okay";
-	pinctrl-names  = "default";
-	pinctrl-0 = <&can_rx_pb8 &can_tx_pb9>;
-	bus-speed = <500000>;
-};
-
-&usart1 {
-	status = "okay";
-	pinctrl-names = "default";
-	pinctrl-0 = <&usart1_tx_pb6 &usart1_rx_pb7>;
-	current-speed = < 115200 >;
-};
-
-&usart4 {
-	status = "okay";
-	pinctrl-names = "default";
-	pinctrl-0 = <&usart4_tx_pc10 &usart4_rx_pc11>;
-	current-speed = < 115200 >;
 };
 
 /* USB */

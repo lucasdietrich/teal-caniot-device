@@ -5,5 +5,4 @@
 #
 
 config BOARD_TEAL_CANIOT
-	bool "Teal Caniot"
-	depends on SOC_STM32F072XB
+	select SOC_STM32L462XX

@@ -1,9 +1,9 @@
-identifier: teal_caniot
+identifier: teal_f072
 name: Teal CANIoT device board
 type: mcu
 arch: arm
-ram: 160
-flash: 512
+ram: 16
+flash: 128
 toolchain:
   - zephyr
   - gnuarmemb

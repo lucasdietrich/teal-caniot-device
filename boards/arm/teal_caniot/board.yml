@@ -1,0 +1,4 @@
+board:
+  name: teal_caniot
+  socs:
+    - name: stm32l462xx

@@ -1,0 +1,4 @@
+board:
+  name: teal_f072
+  socs:
+    - name: stm32f072xb

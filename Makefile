@@ -1,6 +1,9 @@
-.PHONY: build menuconfig clean reports
+.PHONY: build build_f072 menuconfig clean reports
 
 all: build
+
+build_f072:
+	west build -b teal_f072
 
 build:
 	west build -b teal_caniot
