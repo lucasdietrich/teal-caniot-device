@@ -1,0 +1,139 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "external nucleo_l452re (launch)",
+			"cwd": "${workspaceRoot}",
+			"executable": "./build/zephyr/zephyr.elf",
+			"request": "launch",
+			"type": "cortex-debug",
+			"servertype": "external",
+			"gdbTarget": ":3333",
+			"device": "stm32l452re",
+			"runToEntryPoint": "main",
+			"configFiles": [
+				"interface/stlink.cfg",
+				"target/stm32l4x.cfg"
+			],
+			"gdbPath": "/home/lucas/zephyr-sdk-0.16.1/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb"
+		},
+		{
+			"name": "external nucleo_l452re (attach)",
+			"cwd": "${workspaceRoot}",
+			"executable": "./build/zephyr/zephyr.elf",
+			"request": "attach",
+			"type": "cortex-debug",
+			"servertype": "external",
+			"gdbTarget": ":3333",
+			"device": "stm32l452re",
+			"runToEntryPoint": "main",
+			"configFiles": [
+				"interface/stlink.cfg",
+				"target/stm32l4x.cfg"
+			],
+			"gdbPath": "/home/lucas/zephyr-sdk-0.16.1/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb"
+		},
+		{
+			"name": "openocd nucleo_429zi",
+			"cwd": "${workspaceRoot}",
+			"executable": "./build/zephyr/zephyr.elf",
+			"request": "launch",
+			"type": "cortex-debug",
+			"servertype": "openocd",
+			"device": "stm32f429zi",
+			"runToEntryPoint": "main",
+			"configFiles": [
+				"interface/stlink.cfg",
+				"target/stm32f4x.cfg"
+			],
+			"gdbPath": "/home/lucas/zephyr-sdk-0.16.1/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb"
+		},
+		{
+			"name": "external nucleo_429zi",
+			"cwd": "${workspaceRoot}",
+			"executable": "./build/zephyr/zephyr.elf",
+			"request": "attach",
+			"type": "cortex-debug",
+			"servertype": "external",
+			"gdbTarget": ":3333",
+			"device": "stm32f429zi",
+			"configFiles": [
+				"interface/stlink.cfg",
+				"target/stm32f4x.cfg"
+			],
+			"gdbPath": "/home/lucas/zephyr-sdk-0.16.1/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb"
+		},
+		{
+			"name": "(WIP) openocd nucleo_h745zi_q/m7",
+			"cwd": "${workspaceRoot}",
+			"executable": "./build/zephyr/zephyr.elf",
+			"request": "launch",
+			"type": "cortex-debug",
+			"servertype": "openocd",
+			"device": "stm32h745zi",
+			"runToEntryPoint": "main",
+			"numberOfProcessors": 2,
+			"targetProcessor": 0,
+			"configFiles": [
+				"interface/stlink.cfg",
+				"target/stm32h7x_dual_bank.cfg"
+			],
+			"gdbPath": "/home/lucas/zephyr-sdk-0.16.1/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb"
+		},
+		{
+			"name": "(WIP) external nucleo_h745zi_q/m7",
+			"cwd": "${workspaceRoot}",
+			"executable": "./build/zephyr/zephyr.elf",
+			"request": "launch",
+			"type": "cortex-debug",
+			"servertype": "external",
+			"gdbTarget": ":3333",
+			// "device": "stm32h745zi",
+			// "runToEntryPoint": "main",
+			"openOCDLaunchCommands": [
+				"monitor reset",
+				"monitor speed auto",
+			],
+			"gdbPath": "/home/lucas/zephyr-sdk-0.16.1/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb"
+		},
+		{
+			"name": "(WIP) openocd",
+			"cwd": "${workspaceRoot}",
+			"executable": "./build/zephyr/zephyr.elf",
+			"request": "launch",
+			"type": "cortex-debug",
+			"servertype": "openocd",
+			"stm32cubeprogrammer": "",
+			"device": "stm32h745zi_m7",
+			"interface": "swd",
+			"runToEntryPoint": "main",
+			"numberOfProcessors": 2,
+			"targetProcessor": 0,
+			"configFiles": [
+				"h745.cfg"
+			],
+			"gdbPath": "/home/lucas/zephyr-sdk-0.16.1/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb"
+		},
+		{
+			"name": "(WIP) cppdbg",
+			"type": "cppdbg",
+			"request": "launch",
+			"program": "${workspaceFolder}/build/zephyr/zephyr.elf",
+			"args": [],
+			"stopAtEntry": false,
+			"cwd": "${workspaceFolder}",
+			"environment": [],
+			"externalConsole": true,
+			"MIMode": "gdb",
+			"miDebuggerPath": "/usr/bin/gdb",
+			"miDebuggerServerAddress": ":3333",
+			"setupCommands": [
+				{
+					"description": "Enable pretty-printing for gdb",
+					"text": "-enable-pretty-printing",
+					"ignoreFailures": true
+				}
+			]
+		},
+	]
+}

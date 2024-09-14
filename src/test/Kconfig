@@ -1,0 +1,6 @@
+config STM32L4X_MCO
+    bool "STM32 MCO"
+    depends on SOC_SERIES_STM32L4X
+    select USE_STM32_HAL_GPIO
+    help
+        Enable MCO (Master Clock Output) on PA8.

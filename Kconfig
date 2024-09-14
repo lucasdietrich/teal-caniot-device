@@ -1,0 +1,23 @@
+
+
+menuconfig APPLICATION
+    bool "Application"
+    help
+        Enable application
+
+if APPLICATION
+
+endif
+
+menuconfig TEST
+    bool "Test firmware"
+    help
+        Enable test configuration.
+
+if TEST
+rsource "src/test/Kconfig"
+endif
+
+menu "Zephyr Configuration"
+source "Kconfig.zephyr"
+endmenu
