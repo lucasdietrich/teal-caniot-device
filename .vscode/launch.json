@@ -2,6 +2,30 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
+			"name": "external nucleo_l462re (launch)",
+			"cwd": "${workspaceRoot}",
+			"executable": "./build/zephyr/zephyr.elf",
+			"request": "launch",
+			"type": "cortex-debug",
+			"servertype": "external",
+			"gdbTarget": ":3333",
+			"device": "stm32l462re",
+			"runToEntryPoint": "main",
+			"gdbPath": "/home/lucas/zephyr-sdk-0.16.1/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb"
+		},
+		{
+			"name": "external nucleo_l462re (attach)",
+			"cwd": "${workspaceRoot}",
+			"executable": "./build/zephyr/zephyr.elf",
+			"request": "attach",
+			"type": "cortex-debug",
+			"servertype": "external",
+			"gdbTarget": ":3333",
+			"device": "stm32l462re",
+			"runToEntryPoint": "main",
+			"gdbPath": "/home/lucas/zephyr-sdk-0.16.1/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb"
+		},
+		{
 			"name": "external nucleo_l452re (launch)",
 			"cwd": "${workspaceRoot}",
 			"executable": "./build/zephyr/zephyr.elf",
@@ -11,10 +35,6 @@
 			"gdbTarget": ":3333",
 			"device": "stm32l452re",
 			"runToEntryPoint": "main",
-			"configFiles": [
-				"interface/stlink.cfg",
-				"target/stm32l4x.cfg"
-			],
 			"gdbPath": "/home/lucas/zephyr-sdk-0.16.1/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb"
 		},
 		{
@@ -27,10 +47,6 @@
 			"gdbTarget": ":3333",
 			"device": "stm32l452re",
 			"runToEntryPoint": "main",
-			"configFiles": [
-				"interface/stlink.cfg",
-				"target/stm32l4x.cfg"
-			],
 			"gdbPath": "/home/lucas/zephyr-sdk-0.16.1/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb"
 		},
 		{

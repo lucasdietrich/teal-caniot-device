@@ -1,27 +1,35 @@
-.PHONY: build flash menuconfig clean reports build_f072 build_f429 build_caniot build_h745
+.PHONY: build flash debugserver debug menuconfig clean reports teal nucleo_l452 nucleo_f072 nucleo_h745 nucleo_f429
 
 all: build
 
 build:
 	west build
 
-build_f072:
-	west build -b teal_f072
-
-build_caniot:
+# board specific build
+teal:
 	west build -b teal_caniot
 
-build_h745:
-	west build -b nucleo_h745zi_q/stm32h745xx/m7
-
-build_f429:
-	west build -b nucleo_f429zi
-
-build_nucleo_l452:
+nucleo_l452:
 	west build -b nucleo_l452re
 
+nucleo_f072:
+	west build -b teal_f072
+
+nucleo_h745:
+	west build -b nucleo_h745zi_q/stm32h745xx/m7
+
+nucleo_f429:
+	west build -b nucleo_f429zi
+
+# tools
 flash:
 	west flash
+
+debugserver:
+	west debugserver
+
+debug:
+	west debug
 
 menuconfig:
 	west build -t menuconfig

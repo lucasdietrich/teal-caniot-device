@@ -1,5 +1,5 @@
-config STM32L4X_MCO
-    bool "STM32 MCO"
+config STM32L4_MCO
+    bool "STM32L4 MCO"
     depends on SOC_SERIES_STM32L4X
     select USE_STM32_HAL_GPIO
     help

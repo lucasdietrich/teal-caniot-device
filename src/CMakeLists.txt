@@ -7,3 +7,4 @@
 target_sources(app PRIVATE main.c)
 
 add_subdirectory_ifdef(CONFIG_TEST test)
+add_subdirectory(bsp)
