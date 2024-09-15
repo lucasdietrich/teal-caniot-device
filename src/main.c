@@ -28,14 +28,40 @@ LOG_MODULE_REGISTER(usb, LOG_LEVEL_DBG);
 static const struct gpio_dt_spec button = GPIO_DT_SPEC_GET_OR(SW0_NODE, gpios, {0});
 static struct gpio_callback button_cb_data;
 
-static struct gpio_dt_spec led = GPIO_DT_SPEC_GET_OR(DT_ALIAS(led0), gpios, {0});
+static struct gpio_dt_spec led_red	 = GPIO_DT_SPEC_GET_OR(DT_ALIAS(led0), gpios, {0});
+static struct gpio_dt_spec led_green = GPIO_DT_SPEC_GET_OR(DT_ALIAS(led1), gpios, {0});
+static struct gpio_dt_spec led_blue	 = GPIO_DT_SPEC_GET_OR(DT_ALIAS(led2), gpios, {0});
 
 void button_pressed(const struct device *dev, struct gpio_callback *cb, uint32_t pins)
 {
 	printk("Button pressed at %" PRIu32 "\n", k_cycle_get_32());
 }
 
-int button_init(void)
+static int configure_led(struct gpio_dt_spec *led)
+{
+	int ret = 0;
+
+	if (led->port && !gpio_is_ready_dt(led)) {
+		printk("Error %d: LED device %s is not ready; ignoring it\n", ret,
+			   led->port->name);
+		led->port = NULL;
+	}
+
+	if (led->port) {
+		ret = gpio_pin_configure_dt(led, GPIO_OUTPUT);
+		if (ret != 0) {
+			printk("Error %d: failed to configure LED device %s pin %d\n", ret,
+				   led->port->name, led->pin);
+			led->port = NULL;
+		} else {
+			printk("Set up LED at %s pin %d\n", led->port->name, led->pin);
+		}
+	}
+
+	return ret;
+}
+
+static int button_init(void)
 {
 	int ret;
 
@@ -62,20 +88,19 @@ int button_init(void)
 	gpio_add_callback(button.port, &button_cb_data);
 	printk("Set up button at %s pin %d\n", button.port->name, button.pin);
 
-	if (led.port && !gpio_is_ready_dt(&led)) {
-		printk("Error %d: LED device %s is not ready; ignoring it\n", ret,
-			   led.port->name);
-		led.port = NULL;
+	ret = configure_led(&led_red);
+	if (ret != 0) {
+		return ret;
 	}
-	if (led.port) {
-		ret = gpio_pin_configure_dt(&led, GPIO_OUTPUT);
-		if (ret != 0) {
-			printk("Error %d: failed to configure LED device %s pin %d\n", ret,
-				   led.port->name, led.pin);
-			led.port = NULL;
-		} else {
-			printk("Set up LED at %s pin %d\n", led.port->name, led.pin);
-		}
+
+	ret = configure_led(&led_green);
+	if (ret != 0) {
+		return ret;
+	}
+
+	ret = configure_led(&led_blue);
+	if (ret != 0) {
+		return ret;
 	}
 
 	return ret;
@@ -161,11 +186,13 @@ int main(void)
 
 	while (1) {
 		/* If we have an LED, reflect the button state. */
-		if (led.port) {
+		if (led_red.port) {
 			int val = gpio_pin_get_dt(&button);
 
 			if (val >= 0) {
-				gpio_pin_set_dt(&led, val);
+				gpio_pin_set_dt(&led_red, val);
+				gpio_pin_set_dt(&led_green, val);
+				gpio_pin_set_dt(&led_blue, !val);
 			}
 			k_msleep(SLEEP_TIME_MS);
 		}
