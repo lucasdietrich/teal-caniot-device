@@ -8,6 +8,7 @@
 
 #include <zephyr/device.h>
 #include <zephyr/drivers/gpio.h>
+#include <zephyr/drivers/sensor.h>
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/sys/printk.h>
@@ -99,9 +100,51 @@ exit:
 	return ret;
 }
 
+const struct device *const dev_tcn75 = DEVICE_DT_GET_ONE(microchip_tcn75a);
+
+static void sensor_thread(void *a1, void *a2, void *a3)
+{
+	ARG_UNUSED(a1);
+	ARG_UNUSED(a2);
+	ARG_UNUSED(a3);
+
+	if (!device_is_ready(dev_tcn75)) {
+		printk("sensor: device not ready.\n");
+		return;
+	}
+
+	printk("device is %p, name is %s\n", dev_tcn75, dev_tcn75->name);
+
+	for (;;) {
+		int ret;
+		struct sensor_value temp_val;
+
+		/* Read TCN75 temperature value */
+		ret = sensor_sample_fetch(dev_tcn75);
+		if (ret) {
+			printk("sensor_sample_fetch failed ret %d\n", ret);
+		}
+
+		ret = sensor_channel_get(dev_tcn75, SENSOR_CHAN_AMBIENT_TEMP, &temp_val);
+		if (ret) {
+			printk("sensor_channel_get failed ret %d\n", ret);
+		}
+
+		printk("temperature %.6f\n", sensor_value_to_double(&temp_val));
+
+		k_sleep(K_MSEC(1000));
+	}
+}
+
+K_THREAD_DEFINE(sensor_thread_id, 1024, sensor_thread, NULL, NULL, NULL, 10, 0, 0);
+
 int main(void)
 {
-	printk("Hello from teal device!\n");
+#if defined(CONFIG_USB_DEVICE_STACK)
+	usb_init();
+#endif
+
+	// printk("Hello from teal device!\n");
 
 	// static struct caniot_device device;
 	// caniot_app_init(&device);
@@ -110,17 +153,15 @@ int main(void)
 	test_init();
 #endif
 
-#if defined(CONFIG_USB_DEVICE_STACK)
-	usb_init();
-#endif
-
 	button_init();
+
+	k_thread_start(sensor_thread_id);
 
 	printk("Press the button\n");
 
-	if (led.port) {
-		while (1) {
-			/* If we have an LED, match its state to the button's. */
+	while (1) {
+		/* If we have an LED, reflect the button state. */
+		if (led.port) {
 			int val = gpio_pin_get_dt(&button);
 
 			if (val >= 0) {
