@@ -9,17 +9,17 @@
 #include <zephyr/device.h>
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/drivers/sensor.h>
+#include <zephyr/drivers/can.h>
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/sys/printk.h>
 #include <zephyr/sys/util.h>
 #include <zephyr/usb/usb_device.h>
-LOG_MODULE_REGISTER(usb, LOG_LEVEL_DBG);
+
+LOG_MODULE_REGISTER(app, LOG_LEVEL_DBG);
 
 #include <caniot/device.h>
 #include <test.h>
-
-#define SLEEP_TIME_MS 1
 
 #define SW0_NODE DT_ALIAS(sw0)
 #if !DT_NODE_HAS_STATUS(SW0_NODE, okay)
@@ -32,7 +32,7 @@ static struct gpio_dt_spec led_red	 = GPIO_DT_SPEC_GET_OR(DT_ALIAS(led0), gpios,
 static struct gpio_dt_spec led_green = GPIO_DT_SPEC_GET_OR(DT_ALIAS(led1), gpios, {0});
 static struct gpio_dt_spec led_blue	 = GPIO_DT_SPEC_GET_OR(DT_ALIAS(led2), gpios, {0});
 
-void button_pressed(const struct device *dev, struct gpio_callback *cb, uint32_t pins)
+static void button_pressed(const struct device *dev, struct gpio_callback *cb, uint32_t pins)
 {
 	printk("Button pressed at %" PRIu32 "\n", k_cycle_get_32());
 }
@@ -106,7 +106,7 @@ static int button_init(void)
 	return ret;
 }
 
-void usb_status_cb(enum usb_dc_status_code cb_status, const uint8_t *param)
+static void usb_status_cb(enum usb_dc_status_code cb_status, const uint8_t *param)
 {
 	printk("USB status: %d\n", cb_status);
 }
@@ -161,7 +161,64 @@ static void sensor_thread(void *a1, void *a2, void *a3)
 	}
 }
 
-K_THREAD_DEFINE(sensor_thread_id, 1024, sensor_thread, NULL, NULL, NULL, 10, 0, 0);
+K_THREAD_DEFINE(sensor_thread_id, 1024, sensor_thread, NULL, NULL, NULL, 10, 0, SYS_FOREVER_MS);
+
+const static struct device *dev_can = DEVICE_DT_GET(DT_NODELABEL(can1));
+
+CAN_MSGQ_DEFINE(can_msgq, 2);
+
+static void can_thread(void *a1, void *a2, void *a3)
+{
+	ARG_UNUSED(a1);
+	ARG_UNUSED(a2);
+	ARG_UNUSED(a3);
+
+	while (1) {
+		int ret;
+		struct can_frame rx_frame;
+
+		ret = k_msgq_get(&can_msgq, &rx_frame, K_FOREVER);
+
+		if (ret == 0) {
+			printk("CAN frame received\n");
+			printk("ID: %d\n", rx_frame.id);
+			printk("DLC: %d\n", rx_frame.dlc);
+			printk("Data: ");
+			for (int i = 0; i < rx_frame.dlc; i++) {
+				printk("%d ", rx_frame.data[i]);
+			}
+			printk("\n");
+		}
+	}
+}
+
+K_THREAD_DEFINE(can_thread_id, 1024, can_thread, NULL, NULL, NULL, 10, 0, 0);
+
+const struct can_filter can_filter = {0};
+
+static int can_init(void)
+{
+	int ret = 0;
+
+	if (!device_is_ready(dev_can)) {
+		printk("CAN device not ready");
+		ret = -ENODEV;
+		return ret;
+	}
+
+	int filter_id = can_add_rx_filter_msgq(dev_can, &can_msgq, &can_filter);
+	if (filter_id < 0) {
+		LOG_ERR("Unable to add rx msgq [%d]", filter_id);
+		return filter_id;
+	}
+
+	ret = can_start(dev_can);
+	if (ret) {
+		LOG_ERR("CAN: Failed to start ret=%d", ret);
+	}
+
+	return ret;
+}
 
 int main(void)
 {
@@ -169,10 +226,7 @@ int main(void)
 	usb_init();
 #endif
 
-	// printk("Hello from teal device!\n");
-
-	// static struct caniot_device device;
-	// caniot_app_init(&device);
+	can_init();
 
 #if defined(CONFIG_TEST)
 	test_init();
@@ -194,7 +248,7 @@ int main(void)
 				gpio_pin_set_dt(&led_green, val);
 				gpio_pin_set_dt(&led_blue, !val);
 			}
-			k_msleep(SLEEP_TIME_MS);
+			k_msleep(1);
 		}
 	}
 
