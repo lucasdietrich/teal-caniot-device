@@ -4,18 +4,20 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include <inttypes.h>
+#include <zephyr/kernel.h>
+#include <zephyr/sys/printk.h>
+#include <zephyr/sys/util.h>
+#include <zephyr/sys/ring_buffer.h>
+#include <zephyr/usb/usb_device.h>
 
 #include <zephyr/device.h>
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/drivers/sensor.h>
 #include <zephyr/drivers/can.h>
-#include <zephyr/kernel.h>
-#include <zephyr/logging/log.h>
-#include <zephyr/sys/printk.h>
-#include <zephyr/sys/util.h>
-#include <zephyr/usb/usb_device.h>
+#include <zephyr/drivers/uart.h>
 
+
+#include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(app, LOG_LEVEL_DBG);
 
 #include <caniot/device.h>
@@ -106,20 +108,125 @@ static int button_init(void)
 	return ret;
 }
 
+#define USB_CDC_ACM_ALT_NODE DT_NODELABEL(usb_cdc_acm_alt)
+#define USB_CDC_ACM_ALT_ENABLED DT_NODE_HAS_STATUS(USB_CDC_ACM_ALT_NODE, okay)
+
+#if USB_CDC_ACM_ALT_ENABLED
+#define USB_ALT_BUFFER_SIZE 128u
+static const struct device *const dev_cdc_acm_alt = DEVICE_DT_GET(USB_CDC_ACM_ALT_NODE);
+uint8_t usb_alt_buffer[USB_ALT_BUFFER_SIZE];
+static struct ring_buf usb_alt_ring;
+#endif
+
 static void usb_status_cb(enum usb_dc_status_code cb_status, const uint8_t *param)
 {
 	printk("USB status: %d\n", cb_status);
 }
 
+#if USB_CDC_ACM_ALT_ENABLED
+void usb_alt_cb(const struct device *dev, void *user_data)
+{
+	while (uart_irq_update(dev) && uart_irq_is_pending(dev)) {
+		LOG_DBG("dev %p", dev);
+
+		if (uart_irq_rx_ready(dev)) {
+			uint8_t buf[64];
+			int read;
+			size_t wrote;
+			struct ring_buf *rb = &usb_alt_ring;
+
+			read = uart_fifo_read(dev, buf, sizeof(buf));
+			if (read < 0) {
+				LOG_ERR("Failed to read UART FIFO");
+				read = 0;
+			};
+
+			wrote = ring_buf_put(rb, buf, read);
+			if (wrote < read) {
+				LOG_ERR("Drop %zu bytes", read - wrote);
+			}
+
+			LOG_DBG("dev %p send %zu bytes",
+				dev, wrote);
+			if (wrote) {
+				uart_irq_tx_enable(dev);
+			}
+		}
+
+		if (uart_irq_tx_ready(dev)) {
+			uint8_t buf[64];
+			size_t wrote, len;
+
+			len = ring_buf_get(&usb_alt_ring, buf, sizeof(buf));
+			if (!len) {
+				LOG_DBG("dev %p TX buffer empty", dev);
+				uart_irq_tx_disable(dev);
+			} else {
+				wrote = uart_fifo_fill(dev, buf, len);
+				LOG_DBG("dev %p wrote len %zu", dev, wrote);
+			}
+		}
+	}
+}
+#endif
+
 static int usb_init(void)
 {
 	int ret;
+
+#if USB_CDC_ACM_ALT_ENABLED
+	if (!device_is_ready(dev_cdc_acm_alt)) {
+		printk("alt CDC ACM device not ready");
+		ret = -ENODEV;
+		goto exit;
+	}
+#endif
 
 	ret = usb_enable(usb_status_cb);
 	if (ret != 0) {
 		printk("Failed to enable USB");
 		goto exit;
 	}
+
+#if USB_CDC_ACM_ALT_ENABLED
+	uint32_t dtr;
+	while (1) {
+		uart_line_ctrl_get(dev_cdc_acm_alt, UART_LINE_CTRL_DTR, &dtr);
+		if (dtr) {
+			break;
+		}
+
+		k_sleep(K_MSEC(100));
+	}
+
+	uint32_t baudrate;
+
+	/* They are optional, we use them to test the interrupt endpoint */
+	ret = uart_line_ctrl_set(dev_cdc_acm_alt, UART_LINE_CTRL_DCD, 1);
+	if (ret) {
+		LOG_DBG("Failed to set DCD, ret code %d", ret);
+	}
+
+	ret = uart_line_ctrl_set(dev_cdc_acm_alt, UART_LINE_CTRL_DSR, 1);
+	if (ret) {
+		LOG_DBG("Failed to set DSR, ret code %d", ret);
+	}
+
+	/* Wait 1 sec for the host to do all settings */
+	k_busy_wait(1000000);
+
+	ret = uart_line_ctrl_get(dev_cdc_acm_alt, UART_LINE_CTRL_BAUD_RATE, &baudrate);
+	if (ret) {
+		LOG_DBG("Failed to get baudrate, ret code %d", ret);
+	} else {
+		LOG_DBG("Baudrate detected: %d", baudrate);
+	}
+
+	ring_buf_init(&usb_alt_ring, sizeof(usb_alt_buffer), usb_alt_buffer);
+
+	uart_irq_callback_set(dev_cdc_acm_alt, usb_alt_cb);
+	uart_irq_rx_enable(dev_cdc_acm_alt);
+#endif
 
 exit:
 	return ret;

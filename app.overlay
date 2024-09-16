@@ -1,0 +1,10 @@
+/* USB
+ * requires CONFIG_USB_COMPOSITE_DEVICE=y
+ */
+&usb {
+	/* Secondary CDC ACM interface for application purposes */
+	usb_cdc_acm_alt: cdc_acm_uart1 {
+		status = "okay";
+		compatible = "zephyr,cdc-acm-uart";
+	};
+};
