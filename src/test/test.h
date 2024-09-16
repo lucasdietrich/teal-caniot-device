@@ -7,11 +7,9 @@
 #ifndef _TEST_H_
 #define _TEST_H_
 
-#include <stdint.h>
-
 /**
- * @brief Initialize test test
+ * @brief Run test firmware
  */
-void test_init(void);
+int test_main(void);
 
 #endif
