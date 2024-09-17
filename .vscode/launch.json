@@ -4,7 +4,7 @@
 		{
 			"name": "external nucleo_l462re (launch)",
 			"cwd": "${workspaceRoot}",
-			"executable": "./build/zephyr/zephyr.elf",
+			"executable": "./build/zephyr/teal.elf",
 			"request": "launch",
 			"type": "cortex-debug",
 			"servertype": "external",
@@ -16,7 +16,7 @@
 		{
 			"name": "external nucleo_l462re (attach)",
 			"cwd": "${workspaceRoot}",
-			"executable": "./build/zephyr/zephyr.elf",
+			"executable": "./build/zephyr/teal.elf",
 			"request": "attach",
 			"type": "cortex-debug",
 			"servertype": "external",
@@ -28,7 +28,7 @@
 		{
 			"name": "external nucleo_l452re (launch)",
 			"cwd": "${workspaceRoot}",
-			"executable": "./build/zephyr/zephyr.elf",
+			"executable": "./build/zephyr/teal.elf",
 			"request": "launch",
 			"type": "cortex-debug",
 			"servertype": "external",
@@ -40,7 +40,7 @@
 		{
 			"name": "external nucleo_l452re (attach)",
 			"cwd": "${workspaceRoot}",
-			"executable": "./build/zephyr/zephyr.elf",
+			"executable": "./build/zephyr/teal.elf",
 			"request": "attach",
 			"type": "cortex-debug",
 			"servertype": "external",
@@ -52,7 +52,7 @@
 		{
 			"name": "openocd nucleo_429zi",
 			"cwd": "${workspaceRoot}",
-			"executable": "./build/zephyr/zephyr.elf",
+			"executable": "./build/zephyr/teal.elf",
 			"request": "launch",
 			"type": "cortex-debug",
 			"servertype": "openocd",
@@ -67,7 +67,7 @@
 		{
 			"name": "external nucleo_429zi",
 			"cwd": "${workspaceRoot}",
-			"executable": "./build/zephyr/zephyr.elf",
+			"executable": "./build/zephyr/teal.elf",
 			"request": "attach",
 			"type": "cortex-debug",
 			"servertype": "external",
@@ -82,7 +82,7 @@
 		{
 			"name": "(WIP) openocd nucleo_h745zi_q/m7",
 			"cwd": "${workspaceRoot}",
-			"executable": "./build/zephyr/zephyr.elf",
+			"executable": "./build/zephyr/teal.elf",
 			"request": "launch",
 			"type": "cortex-debug",
 			"servertype": "openocd",
@@ -99,7 +99,7 @@
 		{
 			"name": "(WIP) external nucleo_h745zi_q/m7",
 			"cwd": "${workspaceRoot}",
-			"executable": "./build/zephyr/zephyr.elf",
+			"executable": "./build/zephyr/teal.elf",
 			"request": "launch",
 			"type": "cortex-debug",
 			"servertype": "external",
@@ -115,7 +115,7 @@
 		{
 			"name": "(WIP) openocd",
 			"cwd": "${workspaceRoot}",
-			"executable": "./build/zephyr/zephyr.elf",
+			"executable": "./build/zephyr/teal.elf",
 			"request": "launch",
 			"type": "cortex-debug",
 			"servertype": "openocd",
@@ -134,7 +134,7 @@
 			"name": "(WIP) cppdbg",
 			"type": "cppdbg",
 			"request": "launch",
-			"program": "${workspaceFolder}/build/zephyr/zephyr.elf",
+			"program": "${workspaceFolder}/build/zephyr/teal.elf",
 			"args": [],
 			"stopAtEntry": false,
 			"cwd": "${workspaceFolder}",

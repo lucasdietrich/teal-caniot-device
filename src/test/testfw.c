@@ -282,9 +282,9 @@ static void can_thread(void *a1, void *a2, void *a3)
 
 	while (1) {
 		int ret;
-		struct can_frame rx_frame;
+		struct can_frame rx_frame, tx_frame;
 
-		ret = k_msgq_get(&can_msgq, &rx_frame, K_FOREVER);
+		ret = k_msgq_get(&can_msgq, &rx_frame, K_SECONDS(5));
 
 		if (ret == 0) {
 			printk("CAN frame received\n");
@@ -295,6 +295,20 @@ static void can_thread(void *a1, void *a2, void *a3)
 				printk("%d ", rx_frame.data[i]);
 			}
 			printk("\n");
+		}
+
+		memset(&tx_frame, 0, sizeof(tx_frame));
+		tx_frame.id = 0x123; // (1<<3);
+		tx_frame.dlc = 8;
+		tx_frame.data_32[0] = 0x11223344;
+		tx_frame.data_32[1] = 0x55667788;
+		tx_frame.flags = 0u;
+
+		ret = can_send(dev_can, &tx_frame, K_FOREVER, NULL, NULL);
+		if (ret) {
+			printk("CAN send failed\n");
+		} else {
+			printk("CAN frame sent\n");
 		}
 	}
 }
