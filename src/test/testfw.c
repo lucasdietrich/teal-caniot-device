@@ -280,12 +280,14 @@ static void can_thread(void *a1, void *a2, void *a3)
 	ARG_UNUSED(a2);
 	ARG_UNUSED(a3);
 
+	uint32_t last_tx = k_uptime_get_32();
+	uint32_t tx_counter = 0;
+
 	while (1) {
 		int ret;
 		struct can_frame rx_frame, tx_frame;
 
-		ret = k_msgq_get(&can_msgq, &rx_frame, K_SECONDS(5));
-
+		ret = k_msgq_get(&can_msgq, &rx_frame, K_MSEC(500));
 		if (ret == 0) {
 			printk("CAN frame received\n");
 			printk("ID: %d\n", rx_frame.id);
@@ -297,18 +299,25 @@ static void can_thread(void *a1, void *a2, void *a3)
 			printk("\n");
 		}
 
-		memset(&tx_frame, 0, sizeof(tx_frame));
-		tx_frame.id = 0x123; // (1<<3);
-		tx_frame.dlc = 8;
-		tx_frame.data_32[0] = 0x11223344;
-		tx_frame.data_32[1] = 0x55667788;
-		tx_frame.flags = 0u;
+		uint32_t now = k_uptime_get_32();
+		if (now - last_tx > 5000) {
+			last_tx = now;
 
-		ret = can_send(dev_can, &tx_frame, K_FOREVER, NULL, NULL);
-		if (ret) {
-			printk("CAN send failed\n");
-		} else {
-			printk("CAN frame sent\n");
+			// Send a CAN frame
+			memset(&tx_frame, 0, sizeof(tx_frame));
+			tx_frame.id = 0x123; // (1<<3);
+			tx_frame.dlc = 8;
+			tx_frame.data_32[0] = tx_counter;
+			tx_frame.data_32[1] = 0x55667788;
+			tx_frame.flags = 0u;
+
+			ret = can_send(dev_can, &tx_frame, K_FOREVER, NULL, NULL);
+			if (ret) {
+				printk("CAN send failed\n");
+			} else {
+				printk("CAN frame sent\n");
+				tx_counter++;
+			}
 		}
 	}
 }
