@@ -170,33 +170,24 @@ void usb_alt_cb(const struct device *dev, void *user_data)
 }
 #endif
 
-static int usb_init(void)
+#if USB_CDC_ACM_ALT_ENABLED
+static void usb_alt_thread(void *a1, void *a2, void *a3)
 {
 	int ret;
+	ARG_UNUSED(a1);
+	ARG_UNUSED(a2);
+	ARG_UNUSED(a3);
 
-#if USB_CDC_ACM_ALT_ENABLED
-	if (!device_is_ready(dev_cdc_acm_alt)) {
-		printk("alt CDC ACM device not ready");
-		ret = -ENODEV;
-		goto exit;
-	}
-#endif
-
-	ret = usb_enable(usb_status_cb);
-	if (ret != 0) {
-		printk("Failed to enable USB");
-		goto exit;
-	}
-
-#if USB_CDC_ACM_ALT_ENABLED
 	uint32_t dtr;
 	while (1) {
 		uart_line_ctrl_get(dev_cdc_acm_alt, UART_LINE_CTRL_DTR, &dtr);
 		if (dtr) {
 			break;
+		} else {
+			LOG_DBG("Waiting for DTR");
 		}
 
-		k_sleep(K_MSEC(100));
+		k_sleep(K_MSEC(500));
 	}
 
 	uint32_t baudrate;
@@ -226,12 +217,38 @@ static int usb_init(void)
 
 	uart_irq_callback_set(dev_cdc_acm_alt, usb_alt_cb);
 	uart_irq_rx_enable(dev_cdc_acm_alt);
+}
+
+K_THREAD_DEFINE(usb_alt_thread_id, 1024, usb_alt_thread, NULL, NULL, NULL, 10, 0, SYS_FOREVER_MS);
+#endif
+
+static int usb_init(void)
+{
+	int ret;
+
+#if USB_CDC_ACM_ALT_ENABLED
+	if (!device_is_ready(dev_cdc_acm_alt)) {
+		printk("alt CDC ACM device not ready");
+		ret = -ENODEV;
+		goto exit;
+	}
+#endif
+
+	ret = usb_enable(usb_status_cb);
+	if (ret != 0) {
+		printk("Failed to enable USB");
+		goto exit;
+	}
+
+#if USB_CDC_ACM_ALT_ENABLED
+	k_thread_start(usb_alt_thread_id);
 #endif
 
 exit:
 	return ret;
 }
 
+#if DT_HAS_COMPAT_STATUS_OKAY(microchip_tcn75a)
 const struct device *const dev_tcn75 = DEVICE_DT_GET_ONE(microchip_tcn75a);
 
 static void sensor_thread(void *a1, void *a2, void *a3)
@@ -269,8 +286,12 @@ static void sensor_thread(void *a1, void *a2, void *a3)
 }
 
 K_THREAD_DEFINE(sensor_thread_id, 1024, sensor_thread, NULL, NULL, NULL, 10, 0, SYS_FOREVER_MS);
+#endif
 
-const static struct device *dev_can = DEVICE_DT_GET(DT_NODELABEL(can1));
+#define CAN_NODE DT_NODELABEL(can1)
+
+#if DT_NODE_HAS_STATUS(CAN_NODE, okay)
+const static struct device *dev_can = DEVICE_DT_GET(CAN_NODE);
 
 CAN_MSGQ_DEFINE(can_msgq, 2);
 
@@ -322,7 +343,7 @@ static void can_thread(void *a1, void *a2, void *a3)
 	}
 }
 
-K_THREAD_DEFINE(can_thread_id, 1024, can_thread, NULL, NULL, NULL, 10, 0, 0);
+K_THREAD_DEFINE(can_thread_id, 1024, can_thread, NULL, NULL, NULL, 10, 0, SYS_FOREVER_MS);
 
 const struct can_filter can_filter = {0};
 
@@ -347,8 +368,11 @@ static int can_init(void)
 		LOG_ERR("CAN: Failed to start ret=%d", ret);
 	}
 
+	k_thread_start(can_thread_id);
+
 	return ret;
 }
+#endif
 
 static void mco_init(void)
 {
@@ -365,7 +389,9 @@ int test_main(void)
 	usb_init();
 #endif
 
+#if DT_NODE_HAS_STATUS(CAN_NODE, okay)
 	can_init();
+#endif
 
 #if defined(CONFIG_TEST)
 	mco_init();
@@ -373,7 +399,9 @@ int test_main(void)
 
 	button_init();
 
+#if DT_HAS_COMPAT_STATUS_OKAY(microchip_tcn75a)
 	k_thread_start(sensor_thread_id);
+#endif
 
 	printk("Press the button\n");
 

@@ -2,7 +2,7 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"name": "external nucleo_l462re (launch)",
+			"name": "external teal (launch)",
 			"cwd": "${workspaceRoot}",
 			"executable": "./build/zephyr/teal.elf",
 			"request": "launch",
@@ -14,7 +14,7 @@
 			"gdbPath": "/home/lucas/zephyr-sdk-0.16.1/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb"
 		},
 		{
-			"name": "external nucleo_l462re (attach)",
+			"name": "external teal (attach)",
 			"cwd": "${workspaceRoot}",
 			"executable": "./build/zephyr/teal.elf",
 			"request": "attach",

@@ -1,9 +1,9 @@
-/ {
-	chosen {
-		zephyr,console = &usb_cdc_acm_console;
-		zephyr,shell-uart = &usb_cdc_acm_console;
-	};
-};
+// / {
+// 	chosen {
+// 		zephyr,console = &usb_cdc_acm_console;
+// 		zephyr,shell-uart = &usb_cdc_acm_console;
+// 	};
+// };
 
 /* USB
  * requires CONFIG_USB_COMPOSITE_DEVICE=y
