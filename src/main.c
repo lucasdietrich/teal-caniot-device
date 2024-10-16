@@ -4,11 +4,13 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+#if defined(CONFIG_TEST)
 #include <test.h>
+#endif
 
 int main(void)
 {
-	int ret;
+	int ret = 0;
 
 #if defined(CONFIG_TEST)
 	ret = test_main();
@@ -17,5 +19,5 @@ int main(void)
 	for (;;) {
 	}
 
-	return 0;
+	return ret;
 }
