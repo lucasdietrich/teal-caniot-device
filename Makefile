@@ -1,12 +1,11 @@
 .PHONY: build flash debugserver debug menuconfig clean reports teal sysbuild
 
-all: build
+all: build teal flash debug menuconfig reports clean
 
 # nucleo_l452re nucleo_f429zi
 BOARD=teal_caniot
 
-build:
-	west build
+build: teal
 
 # board specific build
 teal:
