@@ -28,6 +28,12 @@ Features:
   </tr>
 </table>
 
+## Rust support
+
+- How to build a library instead ?
+- [Build error in bindgen. #11](https://github.com/zephyrproject-rtos/zephyr-lang-rust/discussions/11)
+- [How to use or test this project. #13](https://github.com/zephyrproject-rtos/zephyr-lang-rust/issues/13)
+
 ## Demo firmware
 
 Build zephyr project with `CONFIG_TEST=y` to enable the demo firmware.
