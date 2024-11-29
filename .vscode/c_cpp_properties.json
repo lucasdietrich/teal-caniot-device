@@ -1,8 +1,30 @@
 {
     "configurations": [
         {
-            "name": "ARM",
+            "name": "teal-caniot-device",
             "compileCommands": "${workspaceRoot}/build/compile_commands.json",
+            "intelliSenseMode": "gcc-arm",
+            "browse": {
+                "path": [
+                    "${workspaceFolder}"
+                ]
+            },
+            "cStandard": "c23"
+        },
+        {
+            "name": "teal-caniot-device (sysbuild)",
+            "compileCommands": "${workspaceRoot}/build/teal-caniot-device/compile_commands.json",
+            "intelliSenseMode": "gcc-arm",
+            "browse": {
+                "path": [
+                    "${workspaceFolder}"
+                ]
+            },
+            "cStandard": "c23"
+        },
+        {
+            "name": "mcuboot (sysbuild)",
+            "compileCommands": "${workspaceRoot}/build/mcuboot/compile_commands.json",
             "intelliSenseMode": "gcc-arm",
             "browse": {
                 "path": [

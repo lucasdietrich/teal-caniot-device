@@ -1,6 +1,6 @@
 # Teal caniot device
 
-`teal` is a custom board for an home automation system.
+`teal` is a custom board for an home automation device.
 It is based on the `stm32l462re` microcontroller.
 The current design replaces [caniot-device](https://github.com/lucasdietrich/caniot-device?tab=readme-ov-file#boards) 
 boards (i.e. V1 and Tiny boards) based on an 8-bit AVR microcontroller.

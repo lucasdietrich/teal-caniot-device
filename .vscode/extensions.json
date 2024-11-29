@@ -1,6 +1,8 @@
 {
     "recommendations": [
         "xaver.clang-format",
-        "nordic-semiconductor.nrf-connect-extension-pack"
+        "nordic-semiconductor.nrf-connect-extension-pack",
+        "ms-vscode.cpptools",
+        "twxs.cmake"
     ]
 }

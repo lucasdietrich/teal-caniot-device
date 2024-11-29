@@ -1,0 +1,47 @@
+#
+# Copyright (c) 2024 Lucas Dietrich <ld.adecy@gmail.com>
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+if BOARD_TEAL_CANIOT
+
+config BOARD_TEAL_CANIOT_FULL_FEATURED
+    bool "Enable extended configuration for Teal CANIoT"
+    default y
+
+endif
+
+if BOARD_TEAL_CANIOT_FULL_FEATURED
+
+config I2C
+    default y
+
+config SPI
+    default y
+
+config ADC
+    default y
+
+config CAN
+    default y
+
+config CRC
+    default y
+
+config W1
+    default y
+
+config USB_CDC_ACM
+    default y
+
+config USB_DEVICE_STACK
+    default y
+
+config SENSOR
+    default y
+
+config TCN75A
+    default y
+
+endif

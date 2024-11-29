@@ -1,13 +1,15 @@
 
 
-menuconfig APPLICATION
-    bool "Application"
+menu "Application Configuration"
+
+config APP_USB_DFU_FW_DOWNLOAD
+    bool "USB DFU firmware download"
+    default y
+    select USB_DFU_CLASS
     help
-        Enable application
+        Enable USB DFU firmware download.
 
-if APPLICATION
-
-endif
+endmenu
 
 menuconfig TEST
     bool "Test firmware"
