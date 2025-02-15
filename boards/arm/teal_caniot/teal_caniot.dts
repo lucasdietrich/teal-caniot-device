@@ -161,7 +161,7 @@
 		&adc1_in15_pb0 &adc1_in16_pb1
 	>;
 	pinctrl-names = "default";
-	st,adc-clock-source = < ASYNC >;
+	st,adc-clock-source = "ASYNC";
 	st,adc-prescaler = < 1 >; // TODO good value?
 };
 
