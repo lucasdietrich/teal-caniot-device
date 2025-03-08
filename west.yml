@@ -5,5 +5,7 @@ manifest:
   projects:
     - name: zephyr
       remote: zephyrproject-rtos
-      revision: v3.7.0
+      revision: v4.1.0
       import: true
+  self:
+    path: teal-caniot-device

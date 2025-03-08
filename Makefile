@@ -40,3 +40,9 @@ reports:
 
 clean:
 	rm -rf build
+
+monitor_ser:
+	python3 -m serial.tools.miniterm /dev/ttyUSB0 115200
+
+monitor_acm:
+	python3 -m serial.tools.miniterm /dev/ttyACM1 115200
