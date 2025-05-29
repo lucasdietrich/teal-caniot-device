@@ -34,6 +34,19 @@ Features:
 - [Build error in bindgen. #11](https://github.com/zephyrproject-rtos/zephyr-lang-rust/discussions/11)
 - [How to use or test this project. #13](https://github.com/zephyrproject-rtos/zephyr-lang-rust/issues/13)
 
+### CAN
+
+Expected output:
+```
+*** Booting Zephyr OS build v4.1.0 ***
+Hello world from Rust on teal_caniot
+INFO:rustapp: Hello world from Rust on teal_caniot
+Failed to receive CAN message, error code: -11
+Failed to receive CAN message, error code: -11
+Failed to receive CAN message, error code: -11
+Received CAN message id: 7f9 dlc: 0 flags: 0 data: [50, 16, 85, 6c, 34, 86, c4, 9c]
+```
+
 ### Requirements
 
 - `rustup target add thumbv7em-none-eabi`

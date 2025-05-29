@@ -12,6 +12,9 @@ crate-type = ["staticlib"]
 zephyr = "0.1.0"
 log = "0.4.22"
 
+# this is optional, but helps rust-analyzer to find the bindings
+zephyr-sys = "0.1.0"
+
 [build-dependencies]
 # required to export Kconfig symbols to the Rust code
 zephyr-build = "0.1.0"

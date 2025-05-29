@@ -4,3 +4,10 @@ config STM32L4_MCO
     select USE_STM32_HAL_GPIO
     help
         Enable MCO (Master Clock Output) on PA8.
+
+config TEST_CAN
+    bool "Test CAN"
+    default y
+    depends on TEST
+    help
+        Enable CAN test configuration.

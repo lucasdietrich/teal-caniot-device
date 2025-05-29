@@ -289,7 +289,7 @@ K_THREAD_DEFINE(sensor_thread_id, 1024, sensor_thread, NULL, NULL, NULL, 10, 0, 
 
 #define CAN_NODE DT_NODELABEL(can1)
 
-#if DT_NODE_HAS_STATUS(CAN_NODE, okay)
+#if defined(CONFIG_TEST_CAN) && DT_NODE_HAS_STATUS(CAN_NODE, okay)
 const static struct device *dev_can = DEVICE_DT_GET(CAN_NODE);
 
 CAN_MSGQ_DEFINE(can_msgq, 2);
@@ -371,7 +371,7 @@ static int can_init(void)
 
 	return ret;
 }
-#endif
+#endif /* CONFIG_TEST_CAN && DT_NODE_HAS_STATUS(CAN_NODE, okay) */
 
 static void mco_init(void)
 {
@@ -388,7 +388,7 @@ int test_main(void)
 	usb_init();
 #endif
 
-#if DT_NODE_HAS_STATUS(CAN_NODE, okay)
+#if defined(CONFIG_TEST_CAN) && DT_NODE_HAS_STATUS(CAN_NODE, okay)
 	can_init();
 #endif
 

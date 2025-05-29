@@ -8,3 +8,4 @@ target_sources_ifndef(CONFIG_RUST app PRIVATE main.c)
 
 add_subdirectory_ifdef(CONFIG_TEST test)
 add_subdirectory(bsp)
+add_subdirectory_ifdef(CONFIG_RUST rustcan)

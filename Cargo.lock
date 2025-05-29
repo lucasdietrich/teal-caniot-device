@@ -434,6 +434,7 @@ dependencies = [
  "log",
  "zephyr",
  "zephyr-build",
+ "zephyr-sys",
 ]
 
 [[package]]

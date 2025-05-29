@@ -1,6 +1,8 @@
 #![no_std]
 #![allow(unexpected_cfgs)]
 
+pub mod rustcan;
+
 use core::ffi::c_int;
 
 use zephyr::printkln;
@@ -21,6 +23,8 @@ extern "C" fn rust_main() {
     printkln!("Hello world from Rust on {}", zephyr::kconfig::CONFIG_BOARD);
 
     info!("Hello world from Rust on {}", zephyr::kconfig::CONFIG_BOARD);
+
+    rustcan::rust_can_task();
 
     #[cfg(CONFIG_TEST)]
     unsafe {
