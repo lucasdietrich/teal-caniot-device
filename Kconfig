@@ -13,6 +13,7 @@ menuconfig TEST
     bool "Test firmware"
     help
         Enable test configuration.
+    
 
 if TEST
 rsource "src/test/Kconfig"

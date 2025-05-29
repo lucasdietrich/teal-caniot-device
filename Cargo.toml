@@ -1,0 +1,17 @@
+[package]
+name = "rustapp"
+version = "0.1.0"
+edition = "2021"
+description = "A sample hello world application in Rust"
+license = "Apache-2.0 or MIT"
+
+[lib]
+crate-type = ["staticlib"]
+
+[dependencies]
+zephyr = "0.1.0"
+log = "0.4.22"
+
+[build-dependencies]
+# required to export Kconfig symbols to the Rust code
+zephyr-build = "0.1.0"

@@ -28,6 +28,17 @@ Features:
   </tr>
 </table>
 
+## Rust support
+
+- How to build a library instead ?
+- [Build error in bindgen. #11](https://github.com/zephyrproject-rtos/zephyr-lang-rust/discussions/11)
+- [How to use or test this project. #13](https://github.com/zephyrproject-rtos/zephyr-lang-rust/issues/13)
+
+### Requirements
+
+- `rustup target add thumbv7em-none-eabi`
+- `sudo apt install clang libclang-dev`
+
 ## Demo firmware
 
 Build zephyr project with `CONFIG_TEST=y` to enable the demo firmware.

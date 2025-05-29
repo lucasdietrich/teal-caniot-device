@@ -17,3 +17,7 @@ find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 project(teal-caniot-device)
 
 add_subdirectory(src)
+
+if (CONFIG_RUST)
+    rust_cargo_application()
+endif()

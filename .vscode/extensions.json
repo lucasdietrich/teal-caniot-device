@@ -1,6 +1,7 @@
 {
     "recommendations": [
         "xaver.clang-format",
-        "nordic-semiconductor.nrf-connect-extension-pack"
+        "llvm-vs-code-extensions.vscode-clangd",
+        "tamasfe.even-better-toml"
     ]
 }

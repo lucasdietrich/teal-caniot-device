@@ -2,7 +2,13 @@ manifest:
   remotes:
     - name: zephyrproject-rtos
       url-base: https://github.com/zephyrproject-rtos
+    - name: lucasdietrich
+      url-base: https://github.com/lucasdietrich
   projects:
+    - name: zephyr-lang-rust
+      path: modules/lang/rust
+      remote: zephyrproject-rtos
+      revision: e53f6de1c067b1876f831fe0b4e53314d4b4dc4d
     - name: zephyr
       remote: zephyrproject-rtos
       revision: v4.1.0

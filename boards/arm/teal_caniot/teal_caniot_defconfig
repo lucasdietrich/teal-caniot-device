@@ -31,6 +31,11 @@ CONFIG_USB_CDC_ACM=y
 CONFIG_USB_DEVICE_STACK=y
 CONFIG_USB_DEVICE_MANUFACTURER="Lucas"
 CONFIG_USB_DEVICE_PRODUCT="Teal CANIoT"
+CONFIG_USB_COMPOSITE_DEVICE=y
+# We need to disable the logs in the USB CDC ACM driver otherwise 
+# the logs will be printed on the (USB) console causing a chain reaction 
+# (eventually recursion leading to a stack overflow)
+CONFIG_USB_CDC_ACM_LOG_LEVEL_OFF=y
 
 # st microelectronics
 CONFIG_USB_DEVICE_VID=0x0483

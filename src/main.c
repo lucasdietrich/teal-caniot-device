@@ -4,7 +4,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+#include <zephyr/kernel.h>
+
+#if defined(CONFIG_TEST)
 #include <test.h>
+#endif
 
 int main(void)
 {
@@ -15,6 +19,8 @@ int main(void)
 #endif
 
 	for (;;) {
+		printk("hello");
+		k_sleep(K_MSEC(1000));
 	}
 
 	return 0;

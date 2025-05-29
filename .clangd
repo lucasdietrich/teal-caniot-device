@@ -1,0 +1,8 @@
+CompileFlags:
+  Add: [-ferror-limit=0]
+  Remove: [
+    -fno-printf-return-value,
+    -mfp16-format=*,
+    -fno-reorder-functions,
+  ]
+  CompilationDatabase: build
