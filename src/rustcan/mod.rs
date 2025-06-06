@@ -1,14 +1,18 @@
 use core::{ffi::c_int, mem::MaybeUninit};
+pub mod can;
 
+use can::blocking::CanDevice;
 use zephyr::{
+    embedded_can::{self, blocking::Can, Frame},
     printkln,
     time::{sleep, Duration, Timeout},
 };
-use zephyr_sys::{can_frame, k_msgq, k_msgq_get};
+use zephyr_sys::{can_frame, device, k_msgq, k_msgq_get};
 
 extern "C" {
     fn can_init() -> c_int;
     static mut can_msgq: k_msgq;
+    static dev_can: *const device;
 }
 
 pub fn rust_can_task() {
@@ -17,6 +21,8 @@ pub fn rust_can_task() {
     }
 
     let duration = Duration::millis_at_least(500);
+
+    let mut can_device = unsafe { CanDevice(dev_can) };
 
     loop {
         let mut data = MaybeUninit::<can_frame>::uninit();
@@ -41,6 +47,24 @@ pub fn rust_can_task() {
             printkln!("Failed to receive CAN message, error code: {}", ret);
         }
 
-        sleep(duration);
+        // sleep(duration);
+
+        // let id = embedded_can::StandardId::new(0x123).expect("Failed to create StandardId");
+        // let frame =
+        //     can::frame::CanFrame::new(id, &[0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08])
+        //         .expect("Failed to create CAN frame");
+
+        // printkln!(
+        //     "Sending CAN message id: {:?} dlc: {} data: {:x?}",
+        //     frame.id(),
+        //     frame.dlc(),
+        //     frame.data()
+        // );
+
+        // can_device
+        //     .transmit(&frame)
+        //     .expect("Failed to transmit CAN frame");
+
+        // printkln!("CAN frame transmitted successfully");
     }
 }

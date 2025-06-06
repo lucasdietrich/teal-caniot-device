@@ -8,7 +8,7 @@ LOG_MODULE_REGISTER(app, LOG_LEVEL_DBG);
 #define CAN_NODE DT_NODELABEL(can1)
 
 #if DT_NODE_HAS_STATUS(CAN_NODE, okay)
-const static struct device *dev_can = DEVICE_DT_GET(CAN_NODE);
+const struct device *dev_can = DEVICE_DT_GET(CAN_NODE);
 
 CAN_MSGQ_DEFINE(can_msgq, 2);
 

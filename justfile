@@ -61,3 +61,6 @@ acm0:
 
 acm1:
     python3 -m serial.tools.miniterm /dev/ttyACM1 115200
+
+miniterm DEV="/dev/ttyUSB0":
+    python3 -m serial.tools.miniterm {{ DEV }} 115200
